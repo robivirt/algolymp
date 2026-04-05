@@ -51,7 +51,7 @@ func (i *Indexer) Feed(cID int) error {
 	i.target, err = url.JoinPath(i.cfg.URL,
 		printRoot,
 		i.cfg.Secret1,
-		scID,
+		// scID,
 		"print")
 	if err != nil {
 		return err
