@@ -58,8 +58,11 @@ func (v *Vydra) uploadTest(testset string, idx int, test *Test) error {
 			return err
 		}
 		tr.Input(input)
+		// } else {
+		// 	if v.typePackage == LinuxPackage || v.typePackage == WindowsPackage {
+		// 		_, _ = v.streamIn.Next() // skip generated test
+		// 	}
 	}
-
 	return v.client.SaveTest(tr)
 }
 

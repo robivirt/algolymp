@@ -35,23 +35,34 @@ func (i *Indexer) Sync() error {
 		return err
 	}
 	for _, s := range shared {
-		if _, ok := synMapa[s.raw]; !ok {
-			data, err := i.GetFile(s.raw)
-			if err != nil {
-				return err
-			}
-			fname := path.Join(i.cachePath, s.raw)
-			if err := os.WriteFile(fname, data, cacheFilePerm); err != nil {
-				return err
-			}
-			if i.printer == "" {
-				logrus.Warn("skip printing (no device provided)")
+		cacheName, err := encodeWindows1251String(s.raw)
+		if err != nil {
+			return err
+		}
+		if _, ok := synMapa[cacheName]; ok {
+			continue
+		}
 
-				continue
-			}
-			if err := printer.PrintFile(fname, i.printer); err != nil {
-				return err
-			}
+		data, err := i.GetFile(s.raw)
+		if err != nil {
+			return err
+		}
+		data, err = encodeWindows1251Bytes(data)
+		if err != nil {
+			return err
+		}
+
+		fname := path.Join(i.cachePath, cacheName)
+		if err := os.WriteFile(fname, data, cacheFilePerm); err != nil {
+			return err
+		}
+		if i.printer == "" {
+			logrus.Warn("skip printing (no device provided)")
+
+			continue
+		}
+		if err := printer.PrintFile(fname, i.printer); err != nil {
+			return err
 		}
 	}
 
